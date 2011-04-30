@@ -23,7 +23,7 @@ def runOne(p,h):
     """Run process p with history h and return the standard output"""
     #print "Run '"+p+"' with history '"+h+"'."
     process = subprocess.Popen(p+" "+h,stdout=subprocess.PIPE,shell=True)
-    return process.communicate()[0]
+    return process.communicate()[0].strip().lower()
 
 def scoreRound(r1,r2):
     return RESULTS.get(r1[0]+r2[0],0)
