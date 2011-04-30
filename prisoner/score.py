@@ -16,6 +16,7 @@ import multiprocessing
 ###
 # config
 PYTHON_PATH = '/usr/bin/python' #path to python executable
+CLISP_PATH = '/usr/bin/clisp'   #path to clisp executable
 
 RESULTS = {"cc":(2,"K"), "ct":(-1,"R"), "tc":(4,"S"), "tt":(1,"E")}
 
@@ -32,7 +33,7 @@ def runRound(p1,p2,h1,h2):
     """Run both processes, and score the results"""
     r1 = runOne(p1,h1)
     r2 = runOne(p2,h2)
-    (s1, L1), (s2, L2) = scoreRound(r1,r2), scoreRound(r2,r1) 
+    (s1, L1), (s2, L2) = scoreRound(r1,r2), scoreRound(r2,r1)
     return (s1, L1+h1),  (s2, L2+h1)
 
 def runGameWork( pair ):
@@ -56,7 +57,15 @@ def processPlayers(players):
         base,ext = os.path.splitext(p)
         if ext == '.py':
             py_compile.compile(p)
+            print 'compiled python: ' + p
             players[i] = '%s %sc' %( PYTHON_PATH, p)
+        elif ext =='.lsp':
+            # we mess with stdout/err here to suprress
+            # the noisy output of clisp
+            if subprocess.call([CLISP_PATH, '-c', p],stdout=subprocess.PIPE,stderr=subprocess.PIPE) == 0:
+                print 'compiled lisp: ' + p
+                players[i] = '%s %s.fas' % (CLISP_PATH, base)
+
     return players
 
 print "Finding warriors in " + sys.argv[1]
