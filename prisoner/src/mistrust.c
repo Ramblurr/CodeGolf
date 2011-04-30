@@ -1,13 +1,16 @@
+/*
+Mistrust (variant)
+
+By Joey
+http://codegolf.stackexchange.com/questions/2357/1p5-iterated-prisoners-dilemma/2358#2358
+*/
 #include <stdio.h>
 #include <string.h>
 
 int main(int argc, char* argv[]) {
-    if (argc == 1) {
+    if (argc == 1)
         printf("t\n");
-        return 0;
-    }
-
-    switch (strlen(argv[1])) {
+    else switch (strlen(argv[1])) {
         case 0:
             printf("t\n");
             break;
