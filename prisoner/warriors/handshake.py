@@ -5,7 +5,7 @@
 import sys
 
 TAG = "ctttctttct"
-TAGMATCH = "KKEKKEEEKK"
+TAGMATCH = "KEEEKEEEKE"
 
 def main():
     if len(sys.argv) == 1:
