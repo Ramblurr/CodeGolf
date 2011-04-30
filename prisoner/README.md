@@ -1,7 +1,8 @@
 1P5: Iterated Prisoner's Dilemma
 ----
 Author:[dmckee](http://codegolf.stackexchange.com/users/78/dmckee)
-Source:http://codegolf.stackexchange.com/questions/2357/1p5-iterated-prisoners-dilemma/2367#2367
+
+Source: http://codegolf.stackexchange.com/questions/2357/1p5-iterated-prisoners-dilemma/2367#2367
 
 ***
 
