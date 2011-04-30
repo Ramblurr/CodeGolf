@@ -11,7 +11,8 @@ import os
 import sys
 import random
 import py_compile
-
+import itertools
+import multiprocessing
 ###
 # config
 PYTHON_PATH = '/usr/bin/python' #path to python executable
@@ -34,7 +35,13 @@ def runRound(p1,p2,h1,h2):
     (s1, L1), (s2, L2) = scoreRound(r1,r2), scoreRound(r2,r1) 
     return (s1, L1+h1),  (s2, L2+h1)
 
+def runGameWork( pair ):
+#    rounds = random.randint(50,200)
+    rounds = 100
+    return runGame(rounds,*pair)
+
 def runGame(rounds,p1,p2):
+    print "Running %s against %s (%s rounds)." %(p1,p2,rounds)
     sa, sd = 0, 0
     ha, hd = '', ''
     for a in range(0,rounds):
@@ -53,12 +60,15 @@ def processPlayers(players):
     return players
 
 print "Finding warriors in " + sys.argv[1]
-players=[sys.argv[1]+exe for exe in os.listdir(sys.argv[1]) if os.access(sys.argv[1]+exe,os.X_OK)]
-players=processPlayers(players)
+players = [sys.argv[1]+exe for exe in os.listdir(sys.argv[1]) if os.access(sys.argv[1]+exe,os.X_OK)]
+players = processPlayers(players)
+
 num_iters = 1
 if len(sys.argv) == 3:
     num_iters = int(sys.argv[2])
+
 print "Running %s tournament iterations" % (num_iters)
+
 total_scores={}
 for p in players:
     total_scores[p] = 0
@@ -67,20 +77,17 @@ for i in range(1,num_iters+1):
     scores={}
     for p in players:
         scores[p] = 0
-    for i1 in range(0,len(players)):
-        p1=players[i1];
-        for i2 in range(i1,len(players)):
-            p2=players[i2];
-#        rounds = random.randint(50,200)
-            rounds = 100
-            #print "Running %s against %s (%s rounds)." %(p1,p2,rounds)
-            s1,s2 = runGame(rounds,p1,p2)
-            #print (s1, s2)
-            if (p1 == p2):
-                scores[p1] += (s1 + s2)/2
-            else:
-                scores[p1] += s1
-                scores[p2] += s2
+    # create the round robin pairs
+    pairs = list( itertools.combinations( players, 2) )
+    pairs.extend( list( itertools.izip( players, players ) ) ) # adds the self pairs
+    pool = multiprocessing.Pool(None) # None = use cpu_count processes
+    results = pool.map(runGameWork, pairs)
+    for (s1,s2),(p1,p2) in zip(results,pairs):
+        if (p1 == p2):
+            scores[p1] += (s1 + s2)/2
+        else:
+            scores[p1] += s1
+            scores[p2] += s2
 
     players_sorted = sorted(scores,key=scores.get)
     for p in players_sorted:
@@ -88,6 +95,7 @@ for i in range(1,num_iters+1):
     winner = max(scores, key=scores.get)
     print "\tWinner is %s" %(winner)
     total_scores[p] += 1
+
 print '-'*10
 print "Final Results:"
 players_sorted = sorted(total_scores,key=total_scores.get)
