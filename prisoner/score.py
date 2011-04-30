@@ -10,6 +10,11 @@ import subprocess
 import os
 import sys
 import random
+import py_compile
+
+###
+# config
+PYTHON_PATH = '/usr/bin/python' #path to python executable
 
 RESULTS = {"cc":(2,"K"), "ct":(-1,"R"), "tc":(4,"S"), "tt":(1,"E")}
 
@@ -39,10 +44,17 @@ def runGame(rounds,p1,p2):
     return sa, sd
 
 
+def processPlayers(players):
+    for i,p in enumerate(players):
+        base,ext = os.path.splitext(p)
+        if ext == '.py':
+            py_compile.compile(p)
+            players[i] = '%s %sc' %( PYTHON_PATH, p)
+    return players
 
 print "Finding warriors in " + sys.argv[1]
 players=[sys.argv[1]+exe for exe in os.listdir(sys.argv[1]) if os.access(sys.argv[1]+exe,os.X_OK)]
-
+players=processPlayers(players)
 num_iters = 1
 if len(sys.argv) == 3:
     num_iters = int(sys.argv[2])
