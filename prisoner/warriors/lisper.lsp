@@ -1,6 +1,5 @@
-; The Little Lisper
-; By Arrdem
-; http://codegolf.stackexchange.com/questions/2357/1p5-iterated-prisoners-dilemma/2373#2373
+#!/usr/bin/env clisp
+
 (setf *r* 0.0)
 (setf *s* 0.0)
 (setf *k* 0.0)
@@ -10,7 +9,7 @@
 
 (loop for i from 1 to (length(car *args*)) do
     (setf foo (char (car *args*) (1- i)))
-    (cond
+    (cond 
         ((equal foo #\R) (setf *r* (1+ *r*)))
         ((equal foo #\S) (setf *s* (1+ *s*)))
         ((equal foo #\K) (setf *k* (1+ *k*)))
