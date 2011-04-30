@@ -1,3 +1,4 @@
+
 #! /usr/bin/python
 #
 # Iterated prisoner's dilemma King of Hill Script Argument is a
@@ -49,8 +50,11 @@ class warrior:
         process = subprocess.Popen(self.exec_code+" "+history,stdout=subprocess.PIPE,shell=True)
         return process.communicate()[0].strip().lower()
         
-    def nicename(self):
-        return string.center(os.path.splitext(os.path.split(self.filename)[1])[0], 15)
+    def nicename(self, pad = True):
+        if pad:
+            return string.center(os.path.splitext(os.path.split(self.filename)[1])[0], 16)
+        else:
+            return os.path.splitext(os.path.split(self.filename)[1])[0]
 
 def scoreRound(r1,r2):
     return RESULTS.get(r1[0]+r2[0],0)
@@ -122,7 +126,7 @@ def tourney(num_iters, num_rounds, players):
         
         print "\n"
         for p in players_sorted:
-            print (p, scores[p])
+            print (p.nicename(pad = False), scores[p])
         
         winner = max(scores, key=scores.get)
         print "\tWinner is %s" %(winner)
@@ -133,7 +137,7 @@ def tourney(num_iters, num_rounds, players):
     players_sorted = sorted(total_scores,key=total_scores.get)
     
     for p in players_sorted:
-        print (p.nicename(), total_scores[p])
+        print p.nicename(pad = False), total_scores[p]
     
     winner = max(total_scores, key=total_scores.get)
     print "Final Winner is " + winner.nicename()
@@ -166,4 +170,3 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]"""
         
         else:
             tourney(num_iters, num_games, players)
-
