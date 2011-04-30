@@ -3,6 +3,9 @@
 # Iterated prisoner's dilemma King of Hill Script Argument is a
 # directory. We find all the executables therein, and run all possible
 # binary combinations (including self-plays (which only count once!)).
+#
+# Author: dmckee (http://codegolf.stackexchange.com/users/78/dmckee)
+#
 import subprocess 
 import os
 import sys
