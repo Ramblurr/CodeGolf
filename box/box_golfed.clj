@@ -1,0 +1,2 @@
+#!/usr/bin/env clj-env-dir
+(use '[clojure.contrib.string :only (repeat)])(let [r ((fn p[%](repeatedly % #(let [x (read-line)](try(doall(p(Integer/parseInt x)))(catch Exception e x))))) 1)]((fn z[m,n,o] (let[b #( let[p(dec o)](println(str(repeat p "| ")%(repeat(- m(* 4 p)2)"-")%(repeat p " |"))))](b \.)(doseq[i n](if(seq? i)(z m i(inc o))(println(str(repeat o "| ")i(repeat(- m(count i)(* o 4))" ")(repeat o " |")))))(b \')))((fn w[x](reduce max(map(fn[%](if(seq? %)(+ (w %)4)(count %)))x)))r)(first r) 1))
