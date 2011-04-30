@@ -10,8 +10,7 @@ import sys
 try:
     history = sys.argv[1]
 except IndexError:
-    print 'c'
-    sys.exit(0)
+    history = ""
 
 two_tats = ("RR", "RE", "ER", "EE")
 
