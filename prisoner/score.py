@@ -1,4 +1,3 @@
-
 #! /usr/bin/python
 #
 # Iterated prisoner's dilemma King of Hill Script Argument is a
@@ -126,7 +125,7 @@ def tourney(num_iters, num_rounds, players):
         
         print "\n"
         for p in players_sorted:
-            print (p.nicename(pad = False), scores[p])
+            print p.nicename(pad = False), scores[p]
         
         winner = max(scores, key=scores.get)
         print "\tWinner is %s" %(winner)
@@ -140,7 +139,7 @@ def tourney(num_iters, num_rounds, players):
         print p.nicename(pad = False), total_scores[p]
     
     winner = max(total_scores, key=total_scores.get)
-    print "Final Winner is " + winner.nicename()
+    print "Final Winner is " + winner.nicename(pad = False) + "!"
 
 if __name__ == "__main__":
     if(len(sys.argv) < 2):
@@ -170,3 +169,4 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]"""
         
         else:
             tourney(num_iters, num_games, players)
+
