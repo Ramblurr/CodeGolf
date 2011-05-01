@@ -1,3 +1,4 @@
+(setf *margin* (rem (/ (1+ (random 20)) 10) 0.3))
 (setf *r* 0.0)
 (setf *s* 0.0)
 (setf *k* 0.0)
@@ -35,14 +36,17 @@
 
 (write-char
     (cond
-        ((or (= *dbag* 1) (= *trust* 1)) #\t) ; maximizes both cases
-                                              ; takes advantage of the angel, crockblocks the devil
-        ((> *dbag* *trust*) #\t)              ; crockblock statistical jerks
-        ((< *dbag* *trust*) #\c)              ; reward the trusting (WARN - BACKSTABBING WOULD IMPROVE SCORE)
-        ((and
-            (= (floor *dbag* 0.1) (floor *trust* 0.1))
-            (not (= 0 *dbag* *trust*)))
-            #\t)                              ; try to backstab a purely random opponent, avoid opening w/ a backstab
+        ((> *sum* 3) (cond 
+                    ((or (= *dbag* 1) (= *trust* 1)) #\t) ; maximizes both cases
+                                                          ; takes advantage of the angel, crockblocks the devil
+                    ((> (+ *dbag* *margin*) *trust*) #\t)     ; crockblock statistical jerks
+                    ((< *dbag* *trust*) #\c)              ; reward the trusting (WARN - BACKSTABBING WOULD IMPROVE SCORE)
+                    ((and
+                        (= (floor *dbag* *margin*) (floor *trust* *margin*))
+                        (not (= 0 *dbag* *trust*)))
+                        #\t)                              ; try to backstab a purely random opponent, avoid opening w/ a backstab
+                    )
+        )
         (t #\c)                               ; defalt case - altruism
     )
 )
