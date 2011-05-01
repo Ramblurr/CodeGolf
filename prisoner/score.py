@@ -20,7 +20,7 @@ import string
 # config
 PYTHON_PATH = '/usr/bin/python' #path to python executable
 CLISP_PATH = '/usr/bin/clisp'   #path to clisp executable
-
+NUM_ROUNDS = 100
 RESULTS = {"cc":(2,"K"), "ct":(-1,"R"), "tc":(4,"S"), "tt":(1,"E")}
 
 class warrior:
@@ -67,9 +67,10 @@ def runRound(p1,p2,h1,h2):
     (s1, L1), (s2, L2) = scoreRound(r1,r2), scoreRound(r2,r1)
     return (s1, L1+h1),  (s2, L2+h1)
 
-def runGameWork( pair, rounds = 100 ):
+def runGameWork( pair):
+    global NUM_ROUNDS
     try:
-        foo = runGame(rounds,*pair)
+        foo = runGame(NUM_ROUNDS,*pair)
         return foo
     except Exception:
         print "FATAL ERROR IN CONTEST"
@@ -88,7 +89,7 @@ def runGame(rounds,p1,p2):
     return sa, sd
 
 
-def processPlayers(players):
+def processPlayers(players):    
     for i,p in enumerate(players):
         players[i] = warrior(p)
         
@@ -97,11 +98,12 @@ def processPlayers(players):
 
 def tourney(num_iters, num_rounds, players):
     total_scores={}
-    
+    global NUM_ROUNDS
+    NUM_ROUNDS = num_rounds   
     for p in players:
         total_scores[p] = 0
     
-    print "Running %s tournament iterations" % (num_iters)
+    print "Running %s tournament iterations of %s matches" % (num_iters, NUM_ROUNDS)
     
     for i in range(1,num_iters+1):
         print "\nTournament", i, "\n", "-"*80
@@ -130,7 +132,7 @@ def tourney(num_iters, num_rounds, players):
             print p.nicename(pad = False), scores[p]
         
         winner = max(scores, key=scores.get)
-        print "\tWinner is %s" %(winner)
+        print "\tWinner is %s" %(winner.nicename(pad = False))
         total_scores[p] += 1
 
     print '-'*80, "\n", "Final Results:"
@@ -150,6 +152,11 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
     
     else:
         if os.path.isdir(sys.argv[1]):
+            
+            for foo in os.listdir("./src/"): # build all c/c++ champs first.
+                os.system(str("gcc -o ./warriors/" + os.path.splitext(os.path.split(foo)[1])[0] + " ./src/" + foo ))
+                #print str("gcc -o ./warriors/" + os.path.splitext(os.path.split(foo)[1])[0] + " ./src/" + foo )
+                
             print "Finding warriors in " + sys.argv[1]
             players = [sys.argv[1]+exe for exe in os.listdir(sys.argv[1]) if os.access(sys.argv[1]+exe,os.X_OK)]
             players = processPlayers(players)
@@ -177,7 +184,7 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
                          'tourney'  : "usage: tourney [[itterations] [rounds][--ban|champ]] - plays off all champs against each-other",
                          'quit'     : "exits this CLI",
                          'exit'     : "exits this CLI",
-                         ''         : "avalable commands:\nlist, match, tourney, quit, exit"
+                         ''         : "avalable commands:\nlist, match, tourney, quit"
                         }
             for champ in players:
                 champ_dict[champ.nicename(pad = False)] = champ
@@ -239,7 +246,8 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
                     
                             tourney(itters, rounds, players)
                         
-                        if(("quit" or "exit") in cmd):
+                        if("quit" in cmd):
+                            print "Bye.\n"
                             break
                         
                         else:
