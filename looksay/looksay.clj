@@ -12,7 +12,7 @@
   (reduce (fn [a b](+ b (* a ten))) seq))
 
 (defn look-seq [n]
-  " Returns a sequence containing the look-say representaiton for n"
+  " Returns a sequence containing the look-say representation for n"
     (digits->num (mapcat (juxt count first) (partition-by identity (num->digits n)))))
 
 (defn look-n-say
