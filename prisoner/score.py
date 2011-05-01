@@ -75,7 +75,10 @@ def runGameWork( pair):
     except Exception:
         print "[!] FATAL ERROR IN CONTEST"
         return
+<<<<<<< HEAD
         
+=======
+>>>>>>> c493f75802d3618839553632439fff72e2832256
 
 def runGame(rounds,p1,p2, printing = False):
     print p1.nicename(),"Vs.", p2.nicename(),"\t",
@@ -126,6 +129,7 @@ def tourney(num_iters, num_rounds, players):
             else:
                 scores[p1] += s1
                 scores[p2] += s2
+<<<<<<< HEAD
 
         players_sorted = sorted(scores,key=scores.get)
         
@@ -263,3 +267,141 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
         else:
             tourney(num_iters, NUM_ROUNDS, players)
 
+=======
+
+        players_sorted = sorted(scores,key=scores.get)
+        
+        print "\n"
+        for p in players_sorted:
+            print p.nicename(pad = False), scores[p]
+        
+        winner = max(scores, key=scores.get)
+        print "\tWinner is %s" %(winner.nicename(pad = False))
+        total_scores[p] += 1
+
+    print '-'*80, "\n", "Final Results:"
+    
+    players_sorted = sorted(total_scores,key=total_scores.get)
+    
+    for p in players_sorted:
+        print p.nicename(pad = False), total_scores[p]
+    
+    winner = max(total_scores, key=total_scores.get)
+    print "Final Winner is " + winner.nicename(pad = False) + "!"
+
+if __name__ == "__main__":
+    if((len(sys.argv) < 2) or (('-?' in sys.argv) or ('--help') in sys.argv)):
+        print """\nscore - by dmckee (http://codegolf.stackexchange.com/users/78/dmckee)
+Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
+    
+    else:
+        if os.path.isdir(sys.argv[1]):
+            
+            for foo in os.listdir("./src/"): # build all c/c++ champs first.
+                os.system(str("gcc -o ./warriors/" + os.path.splitext(os.path.split(foo)[1])[0] + " ./src/" + foo ))
+                #print str("gcc -o ./warriors/" + os.path.splitext(os.path.split(foo)[1])[0] + " ./src/" + foo )
+                
+            print "Finding warriors in " + sys.argv[1]
+            players = [sys.argv[1]+exe for exe in os.listdir(sys.argv[1]) if os.access(sys.argv[1]+exe,os.X_OK)]
+            players = processPlayers(players)
+        else:
+            print "[!] ERROR - bad warriors dir"
+            exit(1)
+
+        num_iters = 1
+        try:
+            num_iters = int(sys.argv[2])
+        except Exception:
+            pass
+            
+        try:
+            NUM_ROUNDS = int(sys.argv[3])
+        except Exception:
+            pass
+        
+        if('-i' in sys.argv):
+            # a crude CLI for special testing etc.
+            champ_dict = {}
+            help_dict = {'list'     : "usage: list - prints the names of all avalable champs",
+                         'match'    : "usage: match [champ] [champ] [[rounds] [-v]] - pits two champs against each-other\n\t -v causes the match's play-by play to be printed too.'",
+                         'tourney'  : "usage: tourney [[itterations] [rounds][--ban|champ]] - plays off all champs against each-other",
+                         'quit'     : "exits this CLI",
+                         'exit'     : "exits this CLI",
+                         ''         : "avalable commands:\nlist, match, tourney, quit"
+                        }
+            for champ in players:
+                champ_dict[champ.nicename(pad = False)] = champ
+            
+            while 1:
+                #try:
+                foo = raw_input("\n[]> ")
+                if(foo == ""):
+                    continue
+                else:
+                    if(" " in foo):
+                        cmd = foo.split(" ")
+                    else:
+                        cmd = [foo]
+                    
+                    if(cmd[0] == ("help" or "?")):
+                        try:
+                            print help_dict[cmd[1]]
+                        except Exception:
+                            print help_dict['']
+                    
+                    if(cmd[0] == "list"):
+                        print "Avalible champs:"
+                        for c in champ_dict:
+                            print "\t", c
+                    
+                    if(cmd[0] == "match"):
+                        flag = ('-v' in cmd)
+                        try:
+                            runGame(int(cmd[3]), champ_dict[cmd[1]], champ_dict[cmd[2]], printing = flag)
+                        except Exception:
+                            try:
+                                runGame(50, champ_dict[cmd[1]], champ_dict[cmd[2]], printing = flag)
+                            except Exception:
+                                print "[!] BAD COMMAND ERROR - TRY THIS COMMAND: help match"
+                                continue
+                    
+                    if(cmd[0] == "tourney"):
+                        itters = 5
+                        rounds = 100
+                        l = []
+                        try:
+                            itters = int(cmd[1])
+                        except Exception:
+                            pass
+                            
+                        try:
+                            rounds = int(cmd[2])
+                        except Exception:
+                            pass
+                        
+                        if("--ban" in cmd):
+                            try:
+                                for c in champ_dict:
+                                    if not(c in cmd):
+                                        l.append(champ_dict[c])
+                            except Exception:
+                                pass
+                        else:
+                            l = players
+                
+                        tourney(itters, rounds, players)
+                    
+                    if("quit" in cmd):
+                        print "Bye.\n"
+                        break
+                    
+                    else:
+                        continue
+
+                #except Exception:
+                #    print "[!] ERROR IN REPL"
+                #    continue    
+        
+        else:
+            tourney(num_iters, NUM_ROUNDS, players)
+>>>>>>> c493f75802d3618839553632439fff72e2832256
