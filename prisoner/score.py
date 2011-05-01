@@ -261,5 +261,5 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
                 #    continue    
         
         else:
-            tourney(num_iters, num_games, players)
+            tourney(num_iters, NUM_ROUNDS, players)
 
