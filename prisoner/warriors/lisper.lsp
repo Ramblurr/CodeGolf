@@ -40,7 +40,11 @@
     (cond
         ((or (= *dbag* 1) (= *trust* 1)) #\t) ; maximizes both cases
                                               ; takes advantage of the angel, crockblocks the devil
-        ((> *dbag* *trust*) #\t)              ; crockblock statistical jerks
+        ((> *dbag* *trust*) (case (random 5)
+					((1 2 3 4)#\t)              ; crockblock statistical jerks
+					((5) #\c)		    ; randomly sucker, hope for the best
+                             )
+        )
         ((< *dbag* *trust*) #\c)              ; reward the trusting (WARN - BACKSTABBING WOULD IMPROVE SCORE)
         ((and
             (= (floor *dbag* 0.1) (floor *trust* 0.1))

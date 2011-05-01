@@ -1,7 +1,4 @@
 #!/usr/bin/python
-# The Secret Handshake
-# By Aaron
-# http://codegolf.stackexchange.com/questions/2357/1p5-iterated-prisoners-dilemma/2375#2375
 import sys
 
 TAG = "ctttctttct"
