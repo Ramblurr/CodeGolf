@@ -144,14 +144,18 @@ def tourney(num_iters, num_rounds, players):
     print "Final Winner is " + winner.nicename(pad = False) + "!"
 
 if __name__ == "__main__":
-    if(len(sys.argv) < 2):
-        print """score - by dmckee (http://codegolf.stackexchange.com/users/78/dmckee)
-Usage score [warriors dir] [[rounds] [games/round] [-i]]"""
+    if((len(sys.argv) < 2) or (('-?' in sys.argv) or ('--help') in sys.argv)):
+        print """\nscore - by dmckee (http://codegolf.stackexchange.com/users/78/dmckee)
+Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
     
     else:
-        print "Finding warriors in " + sys.argv[1]
-        players = [sys.argv[1]+exe for exe in os.listdir(sys.argv[1]) if os.access(sys.argv[1]+exe,os.X_OK)]
-        players = processPlayers(players)
+        if os.path.isdir(sys.argv[1]):
+            print "Finding warriors in " + sys.argv[1]
+            players = [sys.argv[1]+exe for exe in os.listdir(sys.argv[1]) if os.access(sys.argv[1]+exe,os.X_OK)]
+            players = processPlayers(players)
+        else:
+            print "[!] ERROR - bad warriors dir"
+            exit(1)
 
         num_iters = 1
         try:
@@ -223,20 +227,24 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]"""
                             except Exception:
                                 pass
                             
-                            try:
-                                for c in champ_dict:
-                                    if not(c in cmd):
-                                        l.append(champ_dict[c])
-                            except Exception:
-                                pass
+                            if("--ban" in cmd):
+                                try:
+                                    for c in champ_dict:
+                                        if not(c in cmd):
+                                            l.append(champ_dict[c])
+                                except Exception:
+                                    pass
+                            else:
+                                l = players
                     
                             tourney(itters, rounds, players)
                         
-                        if(cmd[0] == ("quit" or "exit")):
+                        if(("quit" or "exit") in cmd):
                             break
                         
                         else:
                             continue
+
                 except Exception:
                     print "[!] ERROR"
                     continue    
