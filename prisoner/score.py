@@ -214,7 +214,6 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
                     
                     if(cmd[0] == "match"):
                         flag = ('-v' in cmd)
-                        print "[&] DBG - FLAG =", flag
                         try:
                             runGame(int(cmd[3]), champ_dict[cmd[1]], champ_dict[cmd[2]], printing = flag)
                         except Exception:
