@@ -170,9 +170,9 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
         except Exception:
             pass
             
-        num_games = 100
+        global NUM_ROUNDS
         try:
-            num_games = int(sys.argv[3])
+            NUM_ROUNDS = int(sys.argv[3])
         except Exception:
             pass
         
