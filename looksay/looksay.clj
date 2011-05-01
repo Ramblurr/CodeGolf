@@ -10,8 +10,7 @@
   (reduce (fn [a b](+ b (* a 10))) seq))
 
 (defn look-seq [n]
-  (let [x (num->digits n)]
-    (digits->num (mapcat (juxt count first) (partition-by identity x)))))
+    (digits->num (mapcat (juxt count first) (partition-by identity (num->digits n)))))
 
 (defn look-n-say [n]
   """ Returns a lazy sequence representing
