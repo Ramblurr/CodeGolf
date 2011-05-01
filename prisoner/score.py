@@ -6,6 +6,7 @@
 #
 # Author: dmckee (http://codegolf.stackexchange.com/users/78/dmckee)
 #
+
 import subprocess 
 import os
 import sys
@@ -14,6 +15,7 @@ import py_compile
 import itertools
 import multiprocessing
 import string
+
 ###
 # config
 PYTHON_PATH = '/usr/bin/python' #path to python executable
@@ -164,8 +166,80 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]"""
             pass
         
         if('-i' in sys.argv):
-            #TODO - ADD A CLI/SHELL
-            pass
+            # a crude CLI for special testing etc.
+            champ_dict = {}
+            help_dict = {'list'     : "usage: list - prints the names of all avalable champs",
+                         'match'    : "usage: match [champ] [champ] [[rounds] [-v]] - pits two champs against each-other\n\t -v causes the match's play-by play to be printed too.'",
+                         'tourney'  : "usage: tourney [[itterations] [rounds][--ban|champ]] - plays off all champs against each-other",
+                         'quit'     : "exits this CLI",
+                         'exit'     : "exits this CLI",
+                         ''         : "avalable commands:\nlist, match, tourney, quit, exit"
+                        }
+            for champ in players:
+                champ_dict[champ.nicename(pad = False)] = champ
+            
+            while 1:
+                try:
+                    foo = raw_input("\n[]> ")
+                    if(foo == ""):
+                        continue
+                    else:
+                        if(" " in foo):
+                            cmd = foo.split(" ")
+                        else:
+                            cmd = [foo]
+                        
+                        if(cmd[0] == ("help" or "?")):
+                            try:
+                                print help_dict[cmd[1]]
+                            except Exception:
+                                print help_dict['']
+                        
+                        if(cmd[0] == "list"):
+                            print "Avalible champs:"
+                            for c in champ_dict:
+                                print "\t", c
+                        
+                        if(cmd[0] == "match"):
+                            try:
+                                runGame(int(cmd[3]), champ_dict[cmd[1]], champ_dict[cmd[2]])
+                            except Exception:
+                                try:
+                                    runGame(50, champ_dict[cmd[1]], champ_dict[cmd[2]])
+                                except e:
+                                    print "[!] MAJOR ERROR - TRY THIS COMMAND: help match"
+                        
+                        if(cmd[0] == "tourney"):
+                            itters = 5
+                            rounds = 100
+                            l = []
+                            try:
+                                itters = int(cmd[1])
+                            except Exception:
+                                pass
+                                
+                            try:
+                                rounds = int(cmd[2])
+                            except Exception:
+                                pass
+                            
+                            try:
+                                for c in champ_dict:
+                                    if not(c in cmd):
+                                        l.append(champ_dict[c])
+                            except Exception:
+                                pass
+                    
+                            tourney(itters, rounds, players)
+                        
+                        if(cmd[0] == ("quit" or "exit")):
+                            break
+                        
+                        else:
+                            continue
+                except Exception:
+                    print "[!] ERROR"
+                    continue    
         
         else:
             tourney(num_iters, num_games, players)
