@@ -65,7 +65,7 @@ def runRound(p1,p2,h1,h2):
     r1 = p1.run(h1)
     r2 = p2.run(h2)
     (s1, L1), (s2, L2) = scoreRound(r1,r2), scoreRound(r2,r1)
-    return (s1, L1+h1),  (s2, L2+h1)
+    return (s1, L1+h1),  (s2, L2+h2)
 
 def runGameWork( pair):
     global NUM_ROUNDS
@@ -73,11 +73,11 @@ def runGameWork( pair):
         foo = runGame(NUM_ROUNDS,*pair)
         return foo
     except Exception:
-        print "FATAL ERROR IN CONTEST"
+        print "[!] FATAL ERROR IN CONTEST"
         return
         
 
-def runGame(rounds,p1,p2):
+def runGame(rounds,p1,p2, printing = False):
     print p1.nicename(),"Vs.", p2.nicename(),"\t",
     sa, sd = 0, 0
     ha, hd = '', ''
@@ -86,6 +86,8 @@ def runGame(rounds,p1,p2):
         sa += na
         sd += nd
     print "Score: ", (sa, sd)
+    if(printing):
+        print p1.nicename(pad = False), ha, "\n", p2.nicename(pad = False), hd
     return sa, sd
 
 
@@ -189,72 +191,75 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
                 champ_dict[champ.nicename(pad = False)] = champ
             
             while 1:
-                try:
-                    foo = raw_input("\n[]> ")
-                    if(foo == ""):
-                        continue
+                #try:
+                foo = raw_input("\n[]> ")
+                if(foo == ""):
+                    continue
+                else:
+                    if(" " in foo):
+                        cmd = foo.split(" ")
                     else:
-                        if(" " in foo):
-                            cmd = foo.split(" ")
-                        else:
-                            cmd = [foo]
-                        
-                        if(cmd[0] == ("help" or "?")):
-                            try:
-                                print help_dict[cmd[1]]
-                            except Exception:
-                                print help_dict['']
-                        
-                        if(cmd[0] == "list"):
-                            print "Avalible champs:"
-                            for c in champ_dict:
-                                print "\t", c
-                        
-                        if(cmd[0] == "match"):
-                            try:
-                                runGame(int(cmd[3]), champ_dict[cmd[1]], champ_dict[cmd[2]])
-                            except Exception:
-                                try:
-                                    runGame(50, champ_dict[cmd[1]], champ_dict[cmd[2]])
-                                except e:
-                                    print "[!] MAJOR ERROR - TRY THIS COMMAND: help match"
-                        
-                        if(cmd[0] == "tourney"):
-                            itters = 5
-                            rounds = 100
-                            l = []
-                            try:
-                                itters = int(cmd[1])
-                            except Exception:
-                                pass
-                                
-                            try:
-                                rounds = int(cmd[2])
-                            except Exception:
-                                pass
-                            
-                            if("--ban" in cmd):
-                                try:
-                                    for c in champ_dict:
-                                        if not(c in cmd):
-                                            l.append(champ_dict[c])
-                                except Exception:
-                                    pass
-                            else:
-                                l = players
+                        cmd = [foo]
                     
-                            tourney(itters, rounds, players)
+                    if(cmd[0] == ("help" or "?")):
+                        try:
+                            print help_dict[cmd[1]]
+                        except Exception:
+                            print help_dict['']
+                    
+                    if(cmd[0] == "list"):
+                        print "Avalible champs:"
+                        for c in champ_dict:
+                            print "\t", c
+                    
+                    if(cmd[0] == "match"):
+                        flag = ('-v' in cmd)
+                        print "[&] DBG - FLAG =", flag
+                        try:
+                            runGame(int(cmd[3]), champ_dict[cmd[1]], champ_dict[cmd[2]], printing = flag)
+                        except Exception:
+                            try:
+                                runGame(50, champ_dict[cmd[1]], champ_dict[cmd[2]], printing = flag)
+                            except Exception:
+                                print "[!] BAD COMMAND ERROR - TRY THIS COMMAND: help match"
+                                continue
+                    
+                    if(cmd[0] == "tourney"):
+                        itters = 5
+                        rounds = 100
+                        l = []
+                        try:
+                            itters = int(cmd[1])
+                        except Exception:
+                            pass
+                            
+                        try:
+                            rounds = int(cmd[2])
+                        except Exception:
+                            pass
                         
-                        if("quit" in cmd):
-                            print "Bye.\n"
-                            break
-                        
+                        if("--ban" in cmd):
+                            try:
+                                for c in champ_dict:
+                                    if not(c in cmd):
+                                        l.append(champ_dict[c])
+                            except Exception:
+                                pass
                         else:
-                            continue
+                            l = players
+                
+                        tourney(itters, rounds, players)
+                    
+                    if("quit" in cmd):
+                        print "Bye.\n"
+                        break
+                    
+                    else:
+                        continue
 
-                except Exception:
-                    print "[!] ERROR"
-                    continue    
+                #except Exception:
+                #    print "[!] ERROR IN REPL"
+                #    continue    
         
         else:
             tourney(num_iters, num_games, players)
