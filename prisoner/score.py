@@ -74,7 +74,7 @@ def runGameWork( pair):
         return foo
     except Exception:
         print "[!] FATAL ERROR IN CONTEST"
-        return
+        return ''
 
 def runGame(rounds,p1,p2, printing = False):
     print p1.nicename(),"Vs.", p2.nicename(),"\t",
@@ -97,7 +97,7 @@ def processPlayers(players):
     print "\n"
     return players
 
-def tourney(num_iters, num_rounds, players):
+def tourney(num_iters, num_rounds, players, play_self = True):
     total_scores={}
     global NUM_ROUNDS
     NUM_ROUNDS = num_rounds   
@@ -115,7 +115,13 @@ def tourney(num_iters, num_rounds, players):
         
         # create the round robin pairs
         pairs = list( itertools.combinations( players, 2) )
-        pairs.extend( list( itertools.izip( players, players ) ) ) # adds the self pairs
+        #print len(players)
+        if(play_self):
+            for foo in players:
+            #    a, b = foo
+            #    print a.nicename(), "\t", b.nicename()
+                pairs.append([foo, foo])
+                
         pool = multiprocessing.Pool(None) # None = use cpu_count processes
         results = pool.map(runGameWork, pairs)
         
@@ -179,85 +185,137 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
         if('-i' in sys.argv):
             # a crude CLI for special testing etc.
             champ_dict = {}
-            help_dict = {'list'     : "usage: list - prints the names of all avalable champs",
-                         'match'    : "usage: match [champ] [champ] [[rounds] [-v]] - pits two champs against each-other\n\t -v causes the match's play-by play to be printed too.'",
-                         'tourney'  : "usage: tourney [[itterations] [rounds][--ban|champ]] - plays off all champs against each-other",
+            for foo in players:
+                champ_dict[foo.nicename(pad = False)] = foo
+            
+            pop_dict = { 'default' : players}
+            help_dict = {
+                         'list'     : "usage: list [population]\n\twith argument lists the contentsof the population.\n\telse lists populations.",
+                         'match'    : "usage: match [champ] [champ] [[rounds] [-v]]\n\tpits two champs against each-other\n\t -v causes the match's play-by play to be printed too.'",
+                         'tourney'  : "usage: tourney [population] [[itterations] [rounds]]\n\tplays off all champs against each-other.",
                          'quit'     : "exits this CLI",
-                         'exit'     : "exits this CLI",
-                         ''         : "avalable commands:\nlist, match, tourney, quit"
+                         'del'      : "usage: del [champion] [population] [[count] [-a]]\n\tdeletes count (default 1) instance of champion from the population.\n\t-a deletes all.",
+                         'add'      : "usage: add [champion] [population] [[instances]]\n\tadds the specified number of instances of the champion to a given population",
+                         'new'      : "usage: new [population name]\n\tcreates an empty list of champions",
+                         ''         : "avalable commands:\nlist, match, tourney, new, add, quit"
                         }
+            
             for champ in players:
                 champ_dict[champ.nicename(pad = False)] = champ
             
             while 1:
-                #try:
-                foo = raw_input("\n[]> ")
-                if(foo == ""):
-                    continue
-                else:
-                    if(" " in foo):
-                        cmd = foo.split(" ")
+                try:
+                    foo = raw_input("\n[]> ")
+                    if(foo == ""):
+                        continue
                     else:
-                        cmd = [foo]
-                    
-                    if(cmd[0] == ("help" or "?")):
-                        try:
-                            print help_dict[cmd[1]]
-                        except Exception:
-                            print help_dict['']
-                    
-                    if(cmd[0] == "list"):
-                        print "Avalible champs:"
-                        for c in champ_dict:
-                            print "\t", c
-                    
-                    if(cmd[0] == "match"):
-                        flag = ('-v' in cmd)
-                        try:
-                            runGame(int(cmd[3]), champ_dict[cmd[1]], champ_dict[cmd[2]], printing = flag)
-                        except Exception:
-                            try:
-                                runGame(50, champ_dict[cmd[1]], champ_dict[cmd[2]], printing = flag)
-                            except Exception:
-                                print "[!] BAD COMMAND ERROR - TRY THIS COMMAND: help match"
-                                continue
-                    
-                    if(cmd[0] == "tourney"):
-                        itters = 5
-                        rounds = 100
-                        l = []
-                        try:
-                            itters = int(cmd[1])
-                        except Exception:
-                            pass
-                            
-                        try:
-                            rounds = int(cmd[2])
-                        except Exception:
-                            pass
+                        if(" " in foo):
+                            cmd = foo.split(" ")
+                        else:
+                            cmd = [foo]
                         
-                        if("--ban" in cmd):
+                        if(cmd[0] == ("help" or "?")):
                             try:
-                                for c in champ_dict:
-                                    if not(c in cmd):
-                                        l.append(champ_dict[c])
+                                print help_dict[cmd[1]]
+                            except Exception:
+                                print help_dict['']
+                        
+                        if(cmd[0] == "add"):
+                            try:
+                                i = 1
+                                if cmd[3]: i = int(cmd[3])
+                                for foo in xrange(i):
+                                    pop_dict[cmd[2]].append(champ_dict[cmd[1]])
+                            except Exception:
+                                print "[!] BAD COMMAND ERROR - TRY THIS COMMAND: help add"
+                                
+                        if(cmd[0] == 'new'):
+                            try:
+                                if cmd[1] in pop_dict:
+                                    print "[!] *WARNING* - POPULATION EXISTS"
+                                    if not ('y' == raw_input("(y/n) > ")):
+                                        continue
+                                pop_dict[cmd[1]] = []
+                            except Exception:
+                                print "[!] BAD COMMAND ERROR - TRY THIS COMMAND: help new"
+                                
+                        if(cmd[0] == 'del'):
+                            try:
+                                if(cmd[3]):
+                                    try:
+                                        count = int(cmd[3])
+                                    except Exception:
+                                        print "[*] EXTERMINATE! EXTERMINATE! EXTERMINATE!"
+                                        count = int(1e300000)
+                                for c in range(0, len(pop_dict[cmd[2]])):
+                                    if (pop_dict[cmd[2]][c] == champ_dict[cmd[1]]):
+                                        if(count > 0):
+                                            pop_dict[cmd[2]][c].pop()
+                            except Exception:
+                                print "[!] BAD COMMAND ERROR - TRY THIS COMMAND: help del OR MAYBE: list default"
+                        
+                        if(cmd[0] == "list"):
+                            try:
+                                if(cmd[1]):
+                                    print "Avalible champs in " + cmd[1] + ":"
+                                    for c in pop_dict[cmd[1]]:
+                                        print "\t", c.nicename(pad = False)
+                                else:
+                                    print "Avalible populations:"
+                                    for c in pop_dict:
+                                        print "\t", c
+                            except Exception:
+                                print "Avalible populations:"
+                                for c in pop_dict:
+                                    print "\t", c
+
+                        if(cmd[0] == "match"):
+                            flag = ('-v' in cmd)
+                            try:
+                                runGame(int(cmd[3]), champ_dict[cmd[1]], champ_dict[cmd[2]], printing = flag)
+                            except Exception:
+                                try:
+                                    runGame(50, champ_dict[cmd[1]], champ_dict[cmd[2]], printing = flag)
+                                except Exception:
+                                    print "[!] BAD COMMAND ERROR - TRY THIS COMMAND: help match"
+                                    continue
+                        
+                        if(cmd[0] == "tourney"):
+                            itters = 5
+                            rounds = 100
+                            pop = []
+                            try:
+                                pop = pop_dict[cmd[1]]
+                            except Exception:
+                                print "[!] BAD POPULATION PROVIDED - TRY THIS COMMAND: help tourney OR: list"
+                                continue
+                            
+                            try:
+                                itters = int(cmd[2])
                             except Exception:
                                 pass
+                                
+                            try:
+                                rounds = int(cmd[3])
+                            except Exception:
+                                pass
+                    
+                            tourney(itters, rounds, pop)
+                        
+                        if("quit" in cmd):
+                            print "Bye.\n"
+                            break
+                        
                         else:
-                            l = players
+                            continue
+                            
+                except Exception:
+                    print "[!] ERROR IN REPL"
+                    continue
                 
-                        tourney(itters, rounds, players)
-                    
-                    if("quit" in cmd):
-                        print "Bye.\n"
-                        break
-                    
-                    else:
-                        continue
-
-                #except Exception:
-                #    print "[!] ERROR IN REPL"
-                #    continue    
+                except (EOFError or KeyboardInterrupt):
+                    print "Bye."
+                    break
         
         else:
             tourney(num_iters, NUM_ROUNDS, players)

@@ -4,3 +4,6 @@ anti-handshake
 mistrust
 random
 tit4tat
+*.lib
+*.fas
+*.pyc

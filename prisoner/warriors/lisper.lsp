@@ -39,7 +39,7 @@
         ((> *sum* 3) (cond 
                     ((or (= *dbag* 1) (= *trust* 1)) #\t) ; maximizes both cases
                                                           ; takes advantage of the angel, crockblocks the devil
-                    ((> (+ *dbag* *margin*) *trust*) #\t)     ; crockblock statistical jerks
+                    ((> (+ *dbag* *margin*) *trust*) #\t) ; crockblock statistical jerks
                     ((< *dbag* *trust*) #\c)              ; reward the trusting (WARN - BACKSTABBING WOULD IMPROVE SCORE)
                     ((and
                         (= (floor *dbag* *margin*) (floor *trust* *margin*))
@@ -47,6 +47,6 @@
                         #\t)                              ; try to backstab a purely random opponent, avoid opening w/ a backstab
                     )
         )
-        (t #\c)                               ; defalt case - altruism
+        (t #\c)                                            ; defalt case - altruism
     )
 )
