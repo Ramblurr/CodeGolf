@@ -194,8 +194,8 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
                          'match'    : "usage: match [champ] [champ] [[rounds] [-v]]\n\tpits two champs against each-other\n\t -v causes the match's play-by play to be printed too.'",
                          'tourney'  : "usage: tourney [population] [[itterations] [rounds]]\n\tplays off all champs against each-other.",
                          'quit'     : "exits this CLI",
-                         'del'      : "usage: del [population] [champion] [[count] [-a]]\n\tdeletes count (default 1) instance of champion from the population.\n\t-a deletes all.",
-                         'add'      : "usage: add [population] [champion] [[instances]]\n\tadds the specified number of instances of the champion to a given population",
+                         'del'      : "usage: del [champion] [population] [[count] [-a]]\n\tdeletes count (default 1) instance of champion from the population.\n\t-a deletes all.",
+                         'add'      : "usage: add [champion] [population] [[instances]]\n\tadds the specified number of instances of the champion to a given population",
                          'new'      : "usage: new [population name]\n\tcreates an empty list of champions",
                          ''         : "avalable commands:\nlist, match, tourney, new, add, quit"
                         }
@@ -225,7 +225,7 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
                                 i = 1
                                 if cmd[3]: i = int(cmd[3])
                                 for foo in xrange(i):
-                                    pop_dict[cmd[1]].append(champ_dict[cmd[2]])
+                                    pop_dict[cmd[2]].append(champ_dict[cmd[1]])
                             except Exception:
                                 print "[!] BAD COMMAND ERROR - TRY THIS COMMAND: help add"
                                 
@@ -247,10 +247,10 @@ Usage score [warriors dir] [[rounds] [games/round] [-i]]\n"""
                                     except Exception:
                                         print "[*] EXTERMINATE! EXTERMINATE! EXTERMINATE!"
                                         count = int(1e300000)
-                                for c in range(0, len(pop_dict[cmd[1]])):
-                                    if (pop_dict[cmd[1]][c] == champ_dict[cmd[2]]):
+                                for c in range(0, len(pop_dict[cmd[2]])):
+                                    if (pop_dict[cmd[2]][c] == champ_dict[cmd[1]]):
                                         if(count > 0):
-                                            pop_dict[cmd[1]][c].pop()
+                                            pop_dict[cmd[2]][c].pop()
                             except Exception:
                                 print "[!] BAD COMMAND ERROR - TRY THIS COMMAND: help del OR MAYBE: list default"
                         
